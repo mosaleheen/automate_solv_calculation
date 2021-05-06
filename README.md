@@ -1,2 +1,2 @@
-# automate_solv_calculation
+### Automate Solvation Calculations
 Automating the file generation for QM/MM solvation calculation
