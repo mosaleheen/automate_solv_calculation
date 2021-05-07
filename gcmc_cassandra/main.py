@@ -4,6 +4,7 @@
 #main.py
 #Mohammad Saleheen
 #CREATED: 05-06-2021
+import os
 import generate_input
 input_params = {'Sim_Type':'gcmc',
                 'Nbr_Species':2,
@@ -14,6 +15,7 @@ input_params = {'Sim_Type':'gcmc',
                 'Chemical_Potential_Info': -44.90
                }
 generate_input.generate_dotinp(**input_params)
-generate_input.get_geometry_xyz(3,3,1)
-generate_input.get_geometry_pdb()
+if os.path.isfile('CONTCAR'):
+    generate_input.get_geometry_xyz(3,3,1)
+    generate_input.get_geometry_pdb()
 
