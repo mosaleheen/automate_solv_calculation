@@ -33,8 +33,8 @@ def generate_dotinp(**kwargs):
     kwargs.setdefault('Run_Type','equilibration  500')
     kwargs.setdefault('Simulation_Length_Info',['units steps',
                                                 'prop_freq 5000',
-                                                'run 10000000',
-                                                'coord_freq 5000'])
+                                                'coord_freq 5000',
+                                                'run 10000000'])
     kwargs.setdefault('Property_Info 1',['energy_total',
                                          'volume',
                                          'nmols',
@@ -47,7 +47,8 @@ def generate_dotinp(**kwargs):
     if kwargs['Nbr_Species'] == 2:
         kwargs.setdefault('Mixing_Rule', 'lb')
         kwargs.setdefault('Start_Type','add_to_config 1 0 geometry.xyz 0 1')
-        kwargs.setdefault('Fragment_Files','species2/frag1/frag1.dat  1')
+        kwargs.setdefault('Molecule_Files',['geometry.mcf 1',
+                                            'tip4p.mcf 10000'])
         kwargs.setdefault('Move_Probability_Info', {
                     'Prob_Translation' : [0.25, '0.00 2.00'],
                     'Prob_Rotation':[0.25, '0.00 45.00'],
@@ -55,12 +56,10 @@ def generate_dotinp(**kwargs):
                     'Prob_Deletion': 0.25,
                     'Done_Probability_Info':''
                                            })
-        kwargs.setdefault('Molecule_Files',['geometry.mcf 1',
-                                            'tip4p.mcf 10000'])
+        kwargs.setdefault('Fragment_Files','species2/frag1/frag1.dat  1')
     elif kwargs['Nbr_Species'] == 1:
         kwargs['Start_Type'] = 'make_config 3000'
         kwargs['Molecule_Files'] = 'tip4p.mcf 10000'
-        kwargs['Fragment_Files'] = 'species1/frag1/frag1.dat  1'
         kwargs['Move_Probability_Info'] = {
                     'Prob_Translation':[0.25, 2.0],
                     'Prob_Rotation':[0.25, 45.00],
@@ -68,6 +67,7 @@ def generate_dotinp(**kwargs):
                     'Prob_Deletion': 0.25,
                     'Done_Probability_Info':''
                                            }
+        kwargs['Fragment_Files'] = 'species1/frag1/frag1.dat  1'
     else:
         print('The script only works for 2 species.')
         return -1
@@ -96,4 +96,4 @@ def generate_dotinp(**kwargs):
                 fwand.write('{}\n\n'.format(endstring))
             else:
                 fwand.write('# {}\n{}\n{}\n\n'.format(key, value, endstring))
-
+        fwand.write('END\n')
