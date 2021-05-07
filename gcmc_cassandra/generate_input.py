@@ -97,3 +97,49 @@ def generate_dotinp(**kwargs):
             else:
                 fwand.write('# {}\n{}\n{}\n\n'.format(key, value, endstring))
         fwand.write('END\n')
+
+def get_geometry_xyz(xmultiple=3, ymultiple=3, zmultiple=1):
+    ifile = 'CONTCAR'
+    fwand = open('geometry.xyz', 'w')
+    with open(ifile, 'r') as frand:
+        for ydim in range(ymultiple):
+            for xdim in range(xmultiple):
+                # dummy
+                frand.readline()
+                frand.readline()
+                # xbox, ybox, zbox, atom type, atom count
+                xbox = float(frand.readline().split()[0])
+                ybox = float(frand.readline().split()[1])
+                zbox = float(frand.readline().split()[2])
+                atoms = list(filter(None, frand.readline().strip().split(' ')))
+                atom_count = [int(x) for x in list(filter(None, frand.readline().strip().split(' ')))]
+                supercell_atom_count = atom_count[0] * xmultiple * ymultiple + sum(atom_count[1:])
+                if xdim == 0 and ydim == 0:
+                    fwand.write('{}\n'.format(supercell_atom_count))
+                    fwand.write('{}\n'.format('Adsorbate'))
+                #dummy
+                frand.readline()
+                frand.readline()
+                # loop through atoms
+                for i in range(1):
+                    for j in range(atom_count[i]):
+                        xc, yc, zc, relax_x, relax_y, relax_z = frand.readline().split()
+                        xc = float(xc) * xbox + xdim * xbox
+                        yc = float(yc) * ybox + ydim * ybox
+                        zc = float(zc) * zbox
+                        fwand.write('{}\t{:0.14f}\t{:0.14f}\t{:0.14f}\n'.format(atoms[i], xc, yc, zc))
+                if (xdim == 1) and (ydim==1):
+                    xads = []
+                    yads = []
+                    zads = []
+                    ads_atom = []
+                    for i in range(1, len(atoms)):
+                        for j in range(atom_count[i]):
+                            xc, yc, zc, relax_x, relax_y, relax_z = frand.readline().split()
+                            xads.append(float(xc) * xbox + xdim * xbox)
+                            yads.append(float(yc) * ybox + ydim * ybox)
+                            zads.append(float(zc) * zbox)
+                            ads_atom.append(atoms[i])
+                frand.seek(0)
+        for i in range(len(ads_atom)):
+            fwand.write('{}\t{:0.14f}\t{:0.14f}\t{:0.14f}\n'.format(ads_atom[i], xads[i], yads[i], zads[i]))
