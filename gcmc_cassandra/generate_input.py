@@ -97,7 +97,8 @@ def generate_dotinp(**kwargs):
             else:
                 fwand.write('# {}\n{}\n{}\n\n'.format(key, value, endstring))
         fwand.write('END\n')
-
+        fwand.close()
+        
 def get_geometry_xyz(xmultiple=3, ymultiple=3, zmultiple=1):
     ifile = 'CONTCAR'
     fwand = open('geometry.xyz', 'w')
@@ -127,7 +128,7 @@ def get_geometry_xyz(xmultiple=3, ymultiple=3, zmultiple=1):
                         xc = float(xc) * xbox + xdim * xbox
                         yc = float(yc) * ybox + ydim * ybox
                         zc = float(zc) * zbox
-                        fwand.write('{}\t{:0.14f}\t{:0.14f}\t{:0.14f}\n'.format(atoms[i], xc, yc, zc))
+                        fwand.write('{}\t{: 0.14f}\t{: 0.14f}\t{: 0.14f}\n'.format(atoms[i], xc, yc, zc))
                 if (xdim == 1) and (ydim==1):
                     xads = []
                     yads = []
@@ -142,4 +143,27 @@ def get_geometry_xyz(xmultiple=3, ymultiple=3, zmultiple=1):
                             ads_atom.append(atoms[i])
                 frand.seek(0)
         for i in range(len(ads_atom)):
-            fwand.write('{}\t{:0.14f}\t{:0.14f}\t{:0.14f}\n'.format(ads_atom[i], xads[i], yads[i], zads[i]))
+            fwand.write('{}\t{: 0.14f}\t{: 0.14f}\t{: 0.14f}\n'.format(ads_atom[i], xads[i], yads[i], zads[i]))
+        fwand.close()
+
+def get_geometry_pdb():
+    ifile = 'geometry.xyz'
+    fwand = open('geometry.pdb', 'w')
+    fwand.write('{}    {}\n'.format('COMPND','Adsorbate'))
+    fwand.write('{}    {}\n'.format('COMPND','1Created by VESTA'))
+    with open (ifile, 'r') as frand:
+        #dummy
+        frand.readline()
+        frand.readline()
+        count = 1
+        for line in frand:
+            atom, xc, yc, zc = line.split()
+            atom_with_count = atom + str(count)
+            fwand.write('{}    {}  {}\t\t{:0.3f}   {:0.3f}   {:.3f}  {:.2f}  {:.2f}\t{}\n'.format('HETATM',\
+                                            count, atom_with_count, float(xc), float(yc), float(zc), 1.00, \
+                                            1.00, atom))
+
+            count += 1
+    fwand.write('END\n')
+    fwand.close()
+

@@ -15,5 +15,5 @@ input_params = {'Sim_Type':'gcmc',
                }
 generate_input.generate_dotinp(**input_params)
 generate_input.get_geometry_xyz(3,3,1)
-
+generate_input.get_geometry_pdb()
 
